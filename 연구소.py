@@ -5,15 +5,15 @@ sys.setrecursionlimit(10 ** 9)
 
 
 def dfs(x, y):
-    global screen_shot
-    if x <= -1 or x >= m or y <= -1 or y >= n or screen_shot[x][y] != 0:
-        return count_safety(screen_shot)
-    screen_shot[x][y] = 2
-    dfs(x - 1, y)
-    dfs(x + 1, y)
-    dfs(x, y - 1)
-    dfs(x, y + 1)
-
+    dx = [-1, 0, 1, 0]
+    dy = [0, 1, 0, -1]
+    for i in range(4):
+        nx = x + dx[i]
+        ny = y + dy[i]
+        if 0 <= nx < n and 0 <= ny < m:
+            if screen_shot[nx][ny] == 0:
+                screen_shot[nx][ny] = 2
+                dfs(nx, ny)
 
 def count_safety(lab):
     return sum(row.count(0) for row in lab)
@@ -31,13 +31,8 @@ for com in list(combinations(safety, 3)):
     for x, y in com:
         screen_shot[x][y] = 1
     for x, y in virus:
-        mx = max(dfs(x, y), mx)
+        dfs(x, y)
 
-    com = sorted(com)
-    if com[0] == [0, 1] and com[1] == [1, 0] and com[2] == [3, 5]:
-        print(count_safety(screen_shot))
-        print(com)
-        print('\n'.join(map(str, screen_shot)))
-
+    mx = max(mx, count_safety(screen_shot))
 print(mx)
 
