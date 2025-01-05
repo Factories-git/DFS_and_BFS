@@ -37,9 +37,11 @@ for i in range(n):
         if tomato[i][j] == 1:
             ferment.append((i, j))
 
-re = bfs(ferment)
-
+bfs(ferment)
+if any(0 in row for row in tomato):
+    print(-1)
+    exit(0)
 max_ = 1
 for i in range(n):
     max_ = max(max_, max(tomato[i]))
-print(max_-1)
+print(max_-1 if max_-1 != 0 else 0)
