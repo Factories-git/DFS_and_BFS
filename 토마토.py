@@ -4,11 +4,12 @@ dx = [-1, 0, 1, 0]
 dy = [0, -1, 0, 1]
 
 
-def bfs(x, y):
+def bfs(fer):
     visit = set()
     k = 0
     queue = deque()
-    queue.append((x, y))
+    for x, y in fer:
+        queue.append((x, y))
     while queue:
         x, y = queue.popleft()
         for i in range(4):
@@ -27,13 +28,16 @@ def bfs(x, y):
 visit = set()
 m, n = map(int, input().split())
 tomato = []
+ferment = []
 for i in range(n):
     tomato.append(list(map(int, input().split())))
 
 for i in range(n):
     for j in range(m):
         if tomato[i][j] == 1:
-            re = bfs(i, j)
+            ferment.append((i, j))
+
+re = bfs(ferment)
 
 max_ = 1
 for i in range(n):
