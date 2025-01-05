@@ -33,25 +33,25 @@ arr = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
 re_ = arr.copy()
 dx = [-1, 0, 1, 0]
 dy = [0, 1, 0, -1]
-plus = 0
+plus_ = 0
 
 
-def DFS(x, y):
-    global plus
+def DFS(x, y, plus):
+    global plus_
     for i in range(4):
         nx = x + dx[i]
         ny = y + dy[i]
         if nx >= 0 or nx < 26 or ny >= 0 or ny < 26:
             if arr[ny][nx] == 0:
                 arr[ny][nx] = 4
-                DFS(nx, ny)
+                DFS(nx, ny, plus + 1)
             elif arr[ny][nx] == 3:
+                plus_ = plus
+                print(plus_)
                 return
-    plus += 1
 
 
 start = arr[23][2]
 end = arr[4][13]
-DFS(23, 2)
-print(plus)
+DFS(23, 2, 0)
 print('\n'.join(map(str, arr)))
