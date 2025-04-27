@@ -24,26 +24,31 @@ def bfs(start):
     queue = deque()
     queue.append(start)
     graph = [[0] * m for i in range(n)]
+    visit = set()
+    flag = True
     while queue:
         x, y, d_x, d_y = queue.popleft()
+        visit.add((x, y))
         for i in range(4):
             nx = x + dx[i]
             ny = y + dy[i]
-            if nx < 0 or nx >= m or ny < 0 or ny >= n:
+            if nx < 0 or nx >= n or ny < 0 or ny >= m:
                 continue
-            if board[nx][ny] == 'O':
-                graph[nx][ny] = graph[x][y]
-                break
             if board[nx][ny] == '#':
                 continue
-            if (d_x != dx[i] or d_y != dy[i]) and board[nx][ny] != '#' and graph[nx][ny] == 0:
+            if (nx, ny) in visit:
+                continue
+            if (d_x != dx[i] or d_y != dy[i]) and graph[nx][ny] == 0:
                 queue.append((nx, ny, dx[i], dy[i]))
                 graph[nx][ny] = graph[x][y] + 1
-                continue
             if d_x == dx[i] and d_y == dy[i]:
+                queue.append((nx, ny, d_x, d_y))
                 graph[nx][ny] = graph[x][y]
-                queue.append((nx, ny, dx[i], dy[i]))
-    print('\n'.join(map(str, graph)))
+            if board[nx][ny] == 'O':
+                flag = False
+                break
+        if not flag:
+            break
     return graph[goal[0]][goal[1]]
 
 
