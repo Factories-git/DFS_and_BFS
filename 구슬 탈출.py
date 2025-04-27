@@ -1,4 +1,4 @@
-#미완
+#미완, 몇번 굴려야 되는지까지 코딩
 from collections import deque
 
 
