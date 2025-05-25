@@ -25,32 +25,55 @@ def bfs(start):
     queue.append(start)
     graph = [[0] * m for i in range(n)]
     visit = set()
+    blue_x, blue_y = blue_bead[0], blue_bead[1]
     flag = True
+    blue_flag = False
     while queue:
         x, y, d_x, d_y = queue.popleft()
         visit.add((x, y))
         for i in range(4):
-            nx = x + dx[i]
-            ny = y + dy[i]
-            if nx < 0 or nx >= n or ny < 0 or ny >= m:
+            blue_donot_move = False
+            red_x = x + dx[i]
+            red_y = y + dy[i]
+            n_blue_x = blue_x + dx[i]
+            n_blue_y = blue_y + dy[i]
+            if red_x < 0 or red_x >= n or red_y < 0 or red_y >= m:
                 continue
-            if board[nx][ny] == '#':
+            if n_blue_x < 0 or n_blue_x >= n or n_blue_y < 0 or n_blue_y >= m:
+                blue_donot_move = True
+                print(dx[i], dy[i], 1)
+            if board[red_x][red_y] == '#':
                 continue
-            if (nx, ny) in visit:
+            if board[n_blue_x][n_blue_y] == '#':
+                blue_donot_move = True
+                print(dx[i], dy[i], 2)
+            if (red_x, red_y) in visit:
                 continue
-            if (d_x != dx[i] or d_y != dy[i]) and graph[nx][ny] == 0:
-                queue.append((nx, ny, dx[i], dy[i]))
-                graph[nx][ny] = graph[x][y] + 1
+            if board[blue_x][blue_y] == '0':
+                blue_flag = True
+            if (d_x != dx[i] or d_y != dy[i]) and graph[red_x][red_y] == 0:
+                if flag:
+                    queue.append((red_x, red_y, dx[i], dy[i]))
+                    graph[red_x][red_y] = graph[x][y] + 1
+                elif not flag and not blue_flag:
+                    return (graph[goal[0]][goal[1]], 1)
+                elif blue_flag:
+                    return -1
             if d_x == dx[i] and d_y == dy[i]:
-                queue.append((nx, ny, d_x, d_y))
-                graph[nx][ny] = graph[x][y]
-            if board[nx][ny] == 'O':
+                queue.append((red_x, red_y, d_x, d_y))
+                graph[red_x][red_y] = graph[x][y]
+                if not blue_donot_move:
+                    blue_x += dx[i]
+                    blue_y += dy[i]
+            if board[red_x][red_y] == 'O':
                 flag = False
-                break
-        if not flag:
-            break
-    return graph[goal[0]][goal[1]]
+            print(blue_x, blue_y, dx[i], dy[i])
 
+    if not flag and not blue_flag:
+        print(blue_flag, flag)
+        return graph[goal[0]][goal[1]]
+    if blue_flag:
+        return -1
 
 s = bfs(red_bead + [0, 0])
 print(s)
