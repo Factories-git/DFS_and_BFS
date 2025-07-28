@@ -1,4 +1,4 @@
-#미완, 몇번 굴려야 되는지까지 코딩
+
 from collections import deque
 
 
@@ -23,57 +23,63 @@ for i in range(n):
 def bfs(start):
     queue = deque()
     queue.append(start)
-    graph = [[0] * m for i in range(n)]
     visit = set()
-    blue_x, blue_y = blue_bead[0], blue_bead[1]
-    flag = True
-    blue_flag = False
+    visit.add(tuple(start[:-1]))
     while queue:
-        x, y, d_x, d_y = queue.popleft()
-        visit.add((x, y))
+        red_x, red_y, blue_x, blue_y, count = queue.popleft()
+        if count >= 10:
+            return -1
         for i in range(4):
-            blue_donot_move = False
-            red_x = x + dx[i]
-            red_y = y + dy[i]
-            n_blue_x = blue_x + dx[i]
-            n_blue_y = blue_y + dy[i]
-            if red_x < 0 or red_x >= n or red_y < 0 or red_y >= m:
-                continue
-            if n_blue_x < 0 or n_blue_x >= n or n_blue_y < 0 or n_blue_y >= m:
-                blue_donot_move = True
-                print(dx[i], dy[i], 1)
-            if board[red_x][red_y] == '#':
-                continue
-            if board[n_blue_x][n_blue_y] == '#':
-                blue_donot_move = True
-                print(dx[i], dy[i], 2)
-            if (red_x, red_y) in visit:
-                continue
-            if board[blue_x][blue_y] == '0':
-                blue_flag = True
-            if (d_x != dx[i] or d_y != dy[i]) and graph[red_x][red_y] == 0:
-                if flag:
-                    queue.append((red_x, red_y, dx[i], dy[i]))
-                    graph[red_x][red_y] = graph[x][y] + 1
-                elif not flag and not blue_flag:
-                    return (graph[goal[0]][goal[1]], 1)
-                elif blue_flag:
-                    return -1
-            if d_x == dx[i] and d_y == dy[i]:
-                queue.append((red_x, red_y, d_x, d_y))
-                graph[red_x][red_y] = graph[x][y]
-                if not blue_donot_move:
-                    blue_x += dx[i]
-                    blue_y += dy[i]
-            if board[red_x][red_y] == 'O':
-                flag = False
-            print(blue_x, blue_y, dx[i], dy[i])
+            flag = False
+            blue_flag = False
+            b_c, r_c = 0, 0
+            repeat = n if dy[i] == 0 else m
+            new_rx, new_ry, new_bx, new_by = red_x, red_y, blue_x, blue_y
+            for j in range(repeat):
+                new_rx += dx[i]
+                new_ry += dy[i]
+                if board[new_rx][new_ry] == '#':
+                    new_rx -= dx[i]
+                    new_ry -= dy[i]
+                    break
+                if board[new_rx][new_ry] == 'O':
+                    flag = True
+                    break
+                r_c += 1
+            for j in range(repeat):
+                new_bx += dx[i]
+                new_by += dy[i]
+                if board[new_bx][new_by] == '#':
+                    new_bx -= dx[i]
+                    new_by -= dy[i]
+                    break
+                if board[new_bx][new_by] == 'O':
+                    blue_flag = True
+                    break
+                b_c += 1
 
-    if not flag and not blue_flag:
-        print(blue_flag, flag)
-        return graph[goal[0]][goal[1]]
-    if blue_flag:
-        return -1
+            if blue_flag:
+                continue
+            if flag:
+                return count + 1
 
-s = bfs(red_bead + [0, 0])
+            if new_rx == new_bx and new_ry == new_by:
+                if dx[i] != 0:
+                    if r_c > b_c:
+                        new_rx -= dx[i]
+                    else:
+                        new_bx -= dx[i]
+                elif dy[i] != 0:
+                    if r_c > b_c:
+                        new_ry -= dy[i]
+                    else:
+                        new_by -= dy[i]
+
+            if (new_rx, new_ry, new_bx, new_by) not in visit:
+                queue.append((new_rx, new_ry, new_bx, new_by, count + 1))
+                visit.add((new_rx, new_ry, new_bx, new_by))
+    return -1
+
+
+s = bfs(red_bead + blue_bead + [0])
 print(s)
